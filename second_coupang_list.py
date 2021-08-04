@@ -14,11 +14,18 @@ li_tags = soup.select('#productList > li')
 product_list = []
 
 for li_tag in li_tags:
+    image_url = 'http:' + li_tag.select_one('a > dl > dt > img')['src']
     product_list.append([
         li_tag.select_one('a > dl > dd > div.name').text.strip(),
         int(li_tag.select_one('a > dl > dd > div.price-area > div > div.price > em > strong').text.replace(',', '')),
         int(li_tag.select_one('a > dl > dd > div.other-info > div > span.rating-total-count').text[1:-1]),
-        'http:' + li_tag.select_one('a > dl > dt > img')['src'],
+        image_url,
     ])
+
+    img_res = requests.get(image_url)
+    filename = image_url[image_url.rindex('/') + 1:]
+    with open('./coupang_img/' + filename, 'wb') as f:
+        f.write(img_res.content)
+        print(filename + ' 파일 쓰기완료')
 
 print(product_list)
