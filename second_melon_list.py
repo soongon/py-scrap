@@ -10,15 +10,15 @@ soup = BeautifulSoup(res.text, 'html.parser')
 
 tr_tags = soup.select('#frm > div > table > tbody > tr')
 
-# for melong songs
+# for melon songs
 song_list = []
 
 for tr_tag in tr_tags:
     song_list.append([
         tr_tag.select_one('td:nth-child(4) > div > div > div.ellipsis.rank01 > span > a').text,  # 곡명
-        tr_tag.select_one('').text,  # 가수명
-        tr_tag.select_one('').text,  # 앨범명
-        tr_tag.select_one('').text,  # 앨범 이미지 URL
+        tr_tag.select_one('td:nth-child(4) > div > div > div.ellipsis.rank02 > a').text,  # 가수명
+        tr_tag.select_one('td:nth-child(5) > div > div > div > a').text,  # 앨범명
+        tr_tag.select_one('td:nth-child(2) > div > a > img')['src'],  # 앨범 이미지 URL
     ])
 
 print(song_list)
