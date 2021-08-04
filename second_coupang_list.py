@@ -14,7 +14,11 @@ li_tags = soup.select('#productList > li')
 product_list = []
 
 for li_tag in li_tags:
-    print(li_tag.select_one('a > dl > dd > div.name').text.strip())
-    # 가격 print(...)
-    # 좋아요 갯수 print(...)
-    # 이미지 URL print(...)
+    product_list.append([
+        li_tag.select_one('a > dl > dd > div.name').text.strip(),
+        int(li_tag.select_one('a > dl > dd > div.price-area > div > div.price > em > strong').text.replace(',', '')),
+        int(li_tag.select_one('a > dl > dd > div.other-info > div > span.rating-total-count').text[1:-1]),
+        'http:' + li_tag.select_one('a > dl > dt > img')['src'],
+    ])
+
+print(product_list)
