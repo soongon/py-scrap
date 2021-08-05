@@ -8,4 +8,7 @@ params = {
     'query': '올림픽'
 }
 res = requests.get('https://dapi.kakao.com/v2/search/web', headers=headers, params=params)
-pprint.pprint(res.json())
+# pprint.pprint(res.json()['documents'])
+
+for item in res.json()['documents']:
+    print(item['title'].replace('<b>', '').replace('</b>', ''))
