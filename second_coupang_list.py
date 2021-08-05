@@ -25,13 +25,7 @@ def make_header():
     }
 
 
-def main():
-    headers = make_header()
-    res = requests.get('https://www.coupang.com/np/categories/393760', headers=headers)
-    soup = BeautifulSoup(res.text, 'html.parser')
-
-    li_tags = soup.select('#productList > li')
-
+def make_product_list_with_li_tags(li_tags):
     # for coupang products
     product_list = []
 
@@ -39,13 +33,36 @@ def main():
         image_url = 'http:' + li_tag.select_one('a > dl > dt > img')['src']
         product_list.append([
             li_tag.select_one('a > dl > dd > div.name').text.strip(),
-            int(li_tag.select_one('a > dl > dd > div.price-area > div > div.price > em > strong').text.replace(',', '')),
+            int(li_tag.select_one('a > dl > dd > div.price-area > div > div.price > em > strong').text.replace(',',
+                                                                                                               '')),
             int(li_tag.select_one('a > dl > dd > div.other-info > div > span.rating-total-count').text[1:-1]),
             image_url,
         ])
         save_image_to_jpg(image_url)
 
-    save_coupang_list_to_csv_and_excel(product_list)
+    return product_list
+
+
+def main():
+    headers = make_header()
+
+    final_product_list = []
+
+    for page in range(1, 100):
+        res = requests.get('https://www.coupang.com/np/categories/393760?page=' + str(page), headers=headers)
+        soup = BeautifulSoup(res.text, 'html.parser')
+
+        li_tags = soup.select('#productList > li')
+
+        if not li_tags:
+            break
+
+        product_list = make_product_list_with_li_tags(li_tags)
+        final_product_list.extend(product_list)
+        print('scrap ' + str(page) + 'page completed..')
+
+    save_coupang_list_to_csv_and_excel(final_product_list)
+    print('save ok..')
 
 
 main()
